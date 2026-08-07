@@ -1,0 +1,16 @@
+workflow_id,workflow_name,department,status,priority,sla_hours,elapsed_hours,manual_steps,automated_steps,automation_score,error_count,rework_count,transaction_volume,avg_handling_time_minutes,pending_items,completion_rate,created_at,updated_at,risk_label
+WF-1000,Customer Support Escalation,Operations,open,medium,85.34,46.76,18,6,0.745,6,1,235,80.9,110,0.732,2026-05-16,2026-05-17 22:45:19.052558679,high
+WF-1001,Customer Support Escalation,Customer Support,in_progress,medium,55.5,15.09,2,4,0.678,4,3,34,42.1,51,0.815,2026-07-13,2026-07-13 15:05:06.296236058,low
+WF-1002,Employee Onboarding,HR,cancelled,low,50.3,39.43,4,1,0.218,7,4,153,86.6,127,0.606,2026-08-06,2026-08-07 15:25:31.692916142,high
+WF-1003,Claims Processing,Finance,completed,medium,78.42,30.14,2,11,0.632,3,1,134,34.9,37,0.727,2026-07-15,2026-07-16 06:08:09.474172353,high
+WF-1004,Vendor Approval,Customer Support,in_progress,medium,109.01,36.67,1,2,0.79,2,1,77,55.3,52,0.802,2026-06-02,2026-06-03 12:40:09.505175433,medium
+WF-1005,Purchase Order Approval,Finance,in_progress,low,154.71,141.49,9,8,0.533,5,4,138,70.5,124,0.664,2026-08-01,2026-08-06 21:29:28.648526647,high
+WF-1006,Compliance Review,IT,completed,medium,126.59,71.44,3,3,0.424,4,4,69,54.2,124,0.489,2026-05-27,2026-05-29 23:26:26.535779275,high
+WF-1007,Employee Onboarding,Procurement,in_progress,medium,148.25,114.61,2,1,0.545,3,0,85,49.3,81,0.71,2026-05-29,2026-06-02 18:36:22.926599168,high
+WF-1008,Compliance Review,Operations,completed,medium,128.45,83.06,15,7,0.353,2,0,134,69.7,99,0.668,2026-07-22,2026-07-25 11:03:42.851654643,medium
+WF-1009,Purchase Order Approval,Customer Support,cancelled,medium,74.58,70.26,4,1,0.345,3,1,127,75.5,139,0.592,2026-06-10,2026-06-12 22:15:43.187496544,low
+WF-1010,Customer Support Escalation,Compliance,open,medium,160.37,110.95,3,10,0.499,4,1,114,33.4,47,0.929,2026-07-11,2026-07-15 14:56:52.694552310,medium
+WF-1011,Order Fulfillment,IT,open,low,103.55,106.6,23,1,0.141,2,4,116,110.8,145,0.577,2026-07-25,2026-07-29 10:35:58.549940296,high
+WF-1012,Customer Support Escalation,Procurement,completed,medium,78.33,57.12,14,10,0.56,4,7,191,59.4,104,0.567,2026-07-19,2026-07-21 09:07:24.902960466,high
+WF-1013,Compliance Review,Procurement,open,low,115.29,82.07,10,6,0.394,3,1,166,83.1,67,0.675,2026-06-03,2026-06-06 10:04:22.430000964,medium
+WF-1014,Employee Onboarding,HR,in_progress,medium,127.57,84.57,11,10,0.605,7,2,34,74.8,141,0.617,2026-08-05,2026-08-08 12:34:07.540057106,high
