@@ -62,6 +62,19 @@ REQUIRED_COLUMNS: tuple[str, ...] = (
     "updated_at",
 )
 
+# Fields that must never be null for a workflow record to be usable downstream.
+CRITICAL_COLUMNS: tuple[str, ...] = (
+    "workflow_id",
+    "sla_hours",
+    "elapsed_hours",
+    "status",
+    "created_at",
+    "updated_at",
+)
+
+# Columns that should be parsed/compared as datetimes rather than raw strings.
+DATETIME_COLUMNS: tuple[str, ...] = ("created_at", "updated_at")
+
 NON_NEGATIVE_COLUMNS: tuple[str, ...] = (
     "sla_hours",
     "elapsed_hours",
