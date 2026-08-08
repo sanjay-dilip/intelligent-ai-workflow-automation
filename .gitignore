@@ -22,6 +22,8 @@ Thumbs.db
 .idea/
 
 # Project-specific
+# Internal build-history/session-context notes -- not for the public repo.
+/CONTEXT.md
 /data/raw/*
 !/data/raw/.gitkeep
 /models/*.joblib
