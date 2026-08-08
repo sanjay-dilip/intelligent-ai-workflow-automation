@@ -87,10 +87,12 @@ def test_run_pipeline_raises_clearly_when_model_missing(tmp_path) -> None:
 def test_run_pipeline_trains_when_missing_and_opted_in(tmp_path) -> None:
     df = _synthetic_dataset()
     missing_model_path = tmp_path / "does_not_exist.joblib"
+    metadata_path = tmp_path / "metadata.json"
 
-    result = run_pipeline(df, train_if_missing=True, model_path=missing_model_path)
+    result = run_pipeline(df, train_if_missing=True, model_path=missing_model_path, metadata_path=metadata_path)
 
     assert missing_model_path.exists()
+    assert metadata_path.exists()
     assert len(result.predictions) == len(df)
 
 
