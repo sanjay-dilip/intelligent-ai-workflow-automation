@@ -90,7 +90,13 @@ def test_missing_denominator_returns_zero_not_nan() -> None:
 
 def test_engineer_features_adds_all_expected_columns() -> None:
     result = engineer_features(_df())
-    for column in ("sla_utilization", "manual_step_ratio", "error_rate", "rework_rate", "backlog_pressure"):
+    for column in (
+        "sla_utilization",
+        "manual_step_ratio",
+        "error_rate",
+        "rework_rate",
+        "backlog_pressure",
+    ):
         assert column in result.columns
 
 

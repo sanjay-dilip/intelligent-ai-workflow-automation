@@ -35,7 +35,9 @@ def load_model(path: Path = MODEL_PATH) -> Pipeline:
         FileNotFoundError: If no trained model exists at ``path``.
     """
     if not path.exists():
-        raise FileNotFoundError(f"Trained model not found at {path}. Run scripts/train_model.py first.")
+        raise FileNotFoundError(
+            f"Trained model not found at {path}. Run scripts/train_model.py first."
+        )
     return joblib.load(path)
 
 
@@ -74,7 +76,8 @@ def predict_workflows(
     results: list[dict] = []
     for position, (_, engineered_row) in enumerate(engineered.iterrows()):
         risk_probability = {
-            str(cls): float(probabilities[position][class_index]) for class_index, cls in enumerate(classes)
+            str(cls): float(probabilities[position][class_index])
+            for class_index, cls in enumerate(classes)
         }
         results.append(
             {

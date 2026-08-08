@@ -69,7 +69,13 @@ def test_run_pipeline_produces_predictions_kpis_alerts_recommendations(tmp_path)
     result = run_pipeline(df, model_path=model_path)
 
     assert len(result.predictions) == len(df)
-    assert set(result.kpi_summary.keys()) == {"volume", "sla", "efficiency", "by_department", "risk"}
+    assert set(result.kpi_summary.keys()) == {
+        "volume",
+        "sla",
+        "efficiency",
+        "by_department",
+        "risk",
+    }
     assert isinstance(result.alerts, list)
     # Each workflow yields at least one recommendation (one per triggered rule, or a fallback).
     assert len(result.recommendations) >= len(df)
@@ -89,7 +95,9 @@ def test_run_pipeline_trains_when_missing_and_opted_in(tmp_path) -> None:
     missing_model_path = tmp_path / "does_not_exist.joblib"
     metadata_path = tmp_path / "metadata.json"
 
-    result = run_pipeline(df, train_if_missing=True, model_path=missing_model_path, metadata_path=metadata_path)
+    result = run_pipeline(
+        df, train_if_missing=True, model_path=missing_model_path, metadata_path=metadata_path
+    )
 
     assert missing_model_path.exists()
     assert metadata_path.exists()
@@ -116,9 +124,9 @@ def test_save_outputs_writes_all_four_files_with_expected_schema(tmp_path) -> No
 
     predictions_df = pd.read_csv(predictions_path)
     assert len(predictions_df) == len(df)
-    expected_prediction_columns = (
-        {"workflow_id", "predicted_risk", "risk_factors"} | {f"risk_probability_{label}" for label in RISK_LABELS}
-    )
+    expected_prediction_columns = {"workflow_id", "predicted_risk", "risk_factors"} | {
+        f"risk_probability_{label}" for label in RISK_LABELS
+    }
     assert expected_prediction_columns.issubset(set(predictions_df.columns))
 
     alerts_df = pd.read_csv(alerts_path)
@@ -177,7 +185,9 @@ def test_save_outputs_writes_empty_alerts_file_with_headers_when_no_alerts(tmp_p
 
 
 def test_load_and_validate_workflow_data_raises_on_invalid_data(tmp_path) -> None:
-    invalid_df = pd.DataFrame([{**BASE_ROW, "workflow_id": "WF-1", "risk_label": "low", "sla_hours": -5.0}])
+    invalid_df = pd.DataFrame(
+        [{**BASE_ROW, "workflow_id": "WF-1", "risk_label": "low", "sla_hours": -5.0}]
+    )
     data_path = tmp_path / "invalid.csv"
     invalid_df.to_csv(data_path, index=False)
 

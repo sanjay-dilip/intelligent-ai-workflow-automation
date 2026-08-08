@@ -65,7 +65,9 @@ def test_sla_breach_triggers_above_full_utilization() -> None:
 
 
 def test_approaching_sla_triggers_at_warning_threshold_boundary() -> None:
-    row = _engineered_row({"elapsed_hours": 80.0})  # utilization == 0.80 == default warning threshold
+    row = _engineered_row(
+        {"elapsed_hours": 80.0}
+    )  # utilization == 0.80 == default warning threshold
     assert APPROACHING_SLA in _rule_types(row)
     assert SLA_BREACH not in _rule_types(row)
 

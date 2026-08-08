@@ -72,7 +72,10 @@ def _assign_soft_risk_labels(risk_score: np.ndarray, rng: np.random.Generator) -
     threshold cutoff.
     """
     logits = np.stack(
-        [-np.abs(risk_score - _RISK_CLASS_CENTERS[label]) / _RISK_LABEL_TEMPERATURE for label in RISK_LABELS],
+        [
+            -np.abs(risk_score - _RISK_CLASS_CENTERS[label]) / _RISK_LABEL_TEMPERATURE
+            for label in RISK_LABELS
+        ],
         axis=1,
     )
     exp_logits = np.exp(logits - logits.max(axis=1, keepdims=True))
@@ -105,7 +108,9 @@ def generate_demo_dataset(n_rows: int = 2000, seed: int = RANDOM_SEED) -> pd.Dat
     propensity = rng.beta(2, 2, size=n_rows)
 
     sla_hours = rng.uniform(4, 168, size=n_rows)
-    sla_utilization_raw = np.clip(0.2 + 0.9 * propensity + rng.normal(0, 0.15, size=n_rows), 0.01, 1.6)
+    sla_utilization_raw = np.clip(
+        0.2 + 0.9 * propensity + rng.normal(0, 0.15, size=n_rows), 0.01, 1.6
+    )
     elapsed_hours = sla_hours * sla_utilization_raw
 
     total_steps = rng.integers(3, 25, size=n_rows)
@@ -115,16 +120,22 @@ def generate_demo_dataset(n_rows: int = 2000, seed: int = RANDOM_SEED) -> pd.Dat
 
     automation_score = np.clip(0.9 - 0.7 * propensity + rng.normal(0, 0.1, size=n_rows), 0.0, 1.0)
 
-    transaction_volume = np.clip(np.round(rng.lognormal(mean=4.5, sigma=0.8, size=n_rows)).astype(int), 1, None)
+    transaction_volume = np.clip(
+        np.round(rng.lognormal(mean=4.5, sigma=0.8, size=n_rows)).astype(int), 1, None
+    )
 
     error_count = rng.poisson(0.5 + 6 * propensity, size=n_rows)
     rework_count = rng.poisson(0.3 + 4 * propensity, size=n_rows)
 
-    avg_handling_time_minutes = np.clip(15 + 90 * manual_ratio_raw + rng.normal(0, 10, size=n_rows), 5, None)
+    avg_handling_time_minutes = np.clip(
+        15 + 90 * manual_ratio_raw + rng.normal(0, 10, size=n_rows), 5, None
+    )
     pending_items = rng.poisson(10 + 150 * propensity, size=n_rows)
     completion_rate = np.clip(0.95 - 0.5 * propensity + rng.normal(0, 0.08, size=n_rows), 0.0, 1.0)
 
-    created_at = pd.Timestamp.now().normalize() - pd.to_timedelta(rng.integers(0, 90, size=n_rows), unit="D")
+    created_at = pd.Timestamp.now().normalize() - pd.to_timedelta(
+        rng.integers(0, 90, size=n_rows), unit="D"
+    )
     updated_at = created_at + pd.to_timedelta(elapsed_hours, unit="h")
 
     error_rate = error_count / transaction_volume
@@ -173,8 +184,15 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     parser = argparse.ArgumentParser(description="Generate synthetic demo workflow data.")
-    parser.add_argument("--rows", type=int, default=2000, help="Number of rows for the full training dataset.")
-    parser.add_argument("--sample-rows", type=int, default=20, help="Number of rows for the checked-in example file.")
+    parser.add_argument(
+        "--rows", type=int, default=2000, help="Number of rows for the full training dataset."
+    )
+    parser.add_argument(
+        "--sample-rows",
+        type=int,
+        default=20,
+        help="Number of rows for the checked-in example file.",
+    )
     parser.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed.")
     args = parser.parse_args()
 

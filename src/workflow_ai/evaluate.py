@@ -37,7 +37,9 @@ class EvaluationResult:
         return asdict(self)
 
 
-def evaluate_pipeline(pipeline: Pipeline, X_test: pd.DataFrame, y_test: pd.Series) -> EvaluationResult:
+def evaluate_pipeline(
+    pipeline: Pipeline, X_test: pd.DataFrame, y_test: pd.Series
+) -> EvaluationResult:
     """Score a fitted pipeline against a held-out test set.
 
     Labels are always evaluated in RISK_LABELS order, and zero_division

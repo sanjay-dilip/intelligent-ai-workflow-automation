@@ -60,7 +60,14 @@ def test_duplicate_workflow_id() -> None:
 
 @pytest.mark.parametrize(
     "column",
-    ["sla_hours", "elapsed_hours", "error_count", "rework_count", "manual_steps", "transaction_volume"],
+    [
+        "sla_hours",
+        "elapsed_hours",
+        "error_count",
+        "rework_count",
+        "manual_steps",
+        "transaction_volume",
+    ],
 )
 def test_negative_values_are_rejected(column: str) -> None:
     result = validate_workflow_data(_make_df({column: -1}))
@@ -93,12 +100,16 @@ def test_automation_score_out_of_bounds(value: float) -> None:
 
 def test_percentage_scale_hint_for_completion_rate_over_one() -> None:
     result = validate_workflow_data(_make_df({"completion_rate": 90.0}))
-    message = next(issue.message for issue in result.errors if issue.check == "unit_interval_bounds")
+    message = next(
+        issue.message for issue in result.errors if issue.check == "unit_interval_bounds"
+    )
     assert "0-100" in message
 
 
 def test_inconsistent_timestamps() -> None:
-    result = validate_workflow_data(_make_df({"created_at": "2026-02-01", "updated_at": "2026-01-01"}))
+    result = validate_workflow_data(
+        _make_df({"created_at": "2026-02-01", "updated_at": "2026-01-01"})
+    )
     assert not result.is_valid
     assert any(issue.check == "inconsistent_timestamps" for issue in result.errors)
 

@@ -28,7 +28,9 @@ def test_load_workflow_data_parses_timestamps(tmp_path: Path) -> None:
 
 def test_load_workflow_data_coerces_unparsable_timestamp_to_nat(tmp_path: Path) -> None:
     csv_path = tmp_path / "workflows.csv"
-    pd.DataFrame({"workflow_id": ["WF-1"], "created_at": ["not-a-date"]}).to_csv(csv_path, index=False)
+    pd.DataFrame({"workflow_id": ["WF-1"], "created_at": ["not-a-date"]}).to_csv(
+        csv_path, index=False
+    )
 
     df = load_workflow_data(csv_path)
 

@@ -21,7 +21,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argument parser for the pipeline CLI."""
     parser = argparse.ArgumentParser(description="Run the full workflow risk pipeline end to end.")
     parser.add_argument(
-        "--data-path", type=str, default=str(DATA_RAW_DIR / "workflows.csv"), help="Path to the workflow CSV file."
+        "--data-path",
+        type=str,
+        default=str(DATA_RAW_DIR / "workflows.csv"),
+        help="Path to the workflow CSV file.",
     )
     parser.add_argument(
         "--train-if-missing",

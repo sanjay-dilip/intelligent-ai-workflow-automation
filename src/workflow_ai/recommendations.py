@@ -44,7 +44,9 @@ _CATEGORY_BY_RULE_TYPE: dict[str, str] = {
     BACKLOG_PRESSURE: REBALANCE_WORKLOAD,
 }
 
-_MEDIUM_RISK_NO_TRIGGERS_MESSAGE = "No rule thresholds triggered, but the model predicts medium risk"
+_MEDIUM_RISK_NO_TRIGGERS_MESSAGE = (
+    "No rule thresholds triggered, but the model predicts medium risk"
+)
 _NO_SIGNAL_MESSAGE = "No rule thresholds triggered and no elevated predicted risk"
 
 

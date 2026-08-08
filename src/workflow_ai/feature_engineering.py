@@ -13,7 +13,9 @@ import pandas as pd
 
 from workflow_ai.config import CATEGORICAL_FEATURE_COLUMNS, NUMERIC_FEATURE_COLUMNS
 
-FEATURE_COLUMNS: tuple[str, ...] = tuple(NUMERIC_FEATURE_COLUMNS) + tuple(CATEGORICAL_FEATURE_COLUMNS)
+FEATURE_COLUMNS: tuple[str, ...] = tuple(NUMERIC_FEATURE_COLUMNS) + tuple(
+    CATEGORICAL_FEATURE_COLUMNS
+)
 
 
 def _safe_ratio(numerator: pd.Series, denominator: pd.Series) -> pd.Series:

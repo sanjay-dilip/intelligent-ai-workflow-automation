@@ -61,7 +61,9 @@ class ValidationResult:
         """A human-readable, one-line-per-issue summary."""
         if not self.issues:
             return "No validation issues found."
-        return "\n".join(f"{issue.severity.upper()} [{issue.check}]: {issue.message}" for issue in self.issues)
+        return "\n".join(
+            f"{issue.severity.upper()} [{issue.check}]: {issue.message}" for issue in self.issues
+        )
 
 
 def validate_workflow_data(df: pd.DataFrame) -> ValidationResult:
@@ -159,7 +161,9 @@ def _check_unit_interval_columns(df: pd.DataFrame, result: ValidationResult) -> 
         out_of_bounds_mask = (numeric < 0) | (numeric > 1)
         if out_of_bounds_mask.any():
             over_one_count = int((numeric > 1).sum())
-            message = f"Column '{column}' has {int(out_of_bounds_mask.sum())} value(s) outside [0, 1]"
+            message = (
+                f"Column '{column}' has {int(out_of_bounds_mask.sum())} value(s) outside [0, 1]"
+            )
             if over_one_count > 0:
                 message += (
                     f" ({over_one_count} value(s) exceed 1 -- check whether the source uses a"
