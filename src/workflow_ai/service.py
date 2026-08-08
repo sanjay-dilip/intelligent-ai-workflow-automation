@@ -21,6 +21,7 @@ from workflow_ai.config import (
     ALERTS_OUTPUT_PATH,
     DEFAULT_RULE_CONFIG,
     KPI_SUMMARY_OUTPUT_PATH,
+    MODEL_METADATA_PATH,
     MODEL_PATH,
     PREDICTIONS_OUTPUT_PATH,
     RECOMMENDATIONS_OUTPUT_PATH,
@@ -61,6 +62,7 @@ def run_pipeline(
     df: pd.DataFrame,
     train_if_missing: bool = False,
     model_path: Path = MODEL_PATH,
+    metadata_path: Path = MODEL_METADATA_PATH,
     rule_config: RuleConfig = DEFAULT_RULE_CONFIG,
 ) -> PipelineResult:
     """Run the full decision-support pipeline over already-loaded, validated workflow data.
@@ -72,6 +74,10 @@ def run_pipeline(
             model fails clearly via predict.load_model's FileNotFoundError
             rather than silently retraining.
         model_path: Where to load (and, if train_if_missing, save) the model.
+        metadata_path: Where to save training metadata if train_if_missing
+            trains a new model. Kept independently overridable from
+            model_path so tests/callers using a scratch model_path don't
+            also need to touch the real MODEL_METADATA_PATH.
         rule_config: Thresholds passed through to KPIs/alerts/recommendations.
     """
     if train_if_missing and not model_path.exists():
@@ -80,7 +86,7 @@ def run_pipeline(
 
         training_result = train_and_evaluate(df)
         save_model(training_result.pipeline, path=model_path)
-        save_metadata(training_result.metadata)
+        save_metadata(training_result.metadata, path=metadata_path)
 
     pipeline = load_model(path=model_path)
     predictions = predict_workflows(df, pipeline=pipeline, rule_config=rule_config)
