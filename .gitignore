@@ -28,9 +28,7 @@ Thumbs.db
 !/data/raw/.gitkeep
 /models/*.joblib
 /models/*.json
-!/models/.gitkeep
 /outputs/alerts/*.csv
 /outputs/predictions/*.csv
 /outputs/reports/*.json
 /outputs/reports/*.csv
-!/outputs/**/.gitkeep
