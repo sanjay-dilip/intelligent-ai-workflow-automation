@@ -51,8 +51,22 @@ def _df(rows: list[dict]) -> pd.DataFrame:
 def test_compute_volume_kpis_counts_total_and_breakdowns() -> None:
     df = _df(
         [
-            _row({"workflow_id": "WF-1", "department": "Finance", "status": "open", "priority": "low"}),
-            _row({"workflow_id": "WF-2", "department": "IT", "status": "completed", "priority": "high"}),
+            _row(
+                {
+                    "workflow_id": "WF-1",
+                    "department": "Finance",
+                    "status": "open",
+                    "priority": "low",
+                }
+            ),
+            _row(
+                {
+                    "workflow_id": "WF-2",
+                    "department": "IT",
+                    "status": "completed",
+                    "priority": "high",
+                }
+            ),
         ]
     )
     result = compute_volume_kpis(df)
@@ -65,9 +79,15 @@ def test_compute_volume_kpis_counts_total_and_breakdowns() -> None:
 def test_compute_sla_kpis_breach_and_approaching_are_mutually_exclusive() -> None:
     df = _df(
         [
-            _row({"workflow_id": "WF-breach", "sla_hours": 100.0, "elapsed_hours": 100.0}),  # 1.0 -> breach
-            _row({"workflow_id": "WF-approaching", "sla_hours": 100.0, "elapsed_hours": 85.0}),  # 0.85 -> approaching
-            _row({"workflow_id": "WF-safe", "sla_hours": 100.0, "elapsed_hours": 20.0}),  # 0.2 -> neither
+            _row(
+                {"workflow_id": "WF-breach", "sla_hours": 100.0, "elapsed_hours": 100.0}
+            ),  # 1.0 -> breach
+            _row(
+                {"workflow_id": "WF-approaching", "sla_hours": 100.0, "elapsed_hours": 85.0}
+            ),  # 0.85 -> approaching
+            _row(
+                {"workflow_id": "WF-safe", "sla_hours": 100.0, "elapsed_hours": 20.0}
+            ),  # 0.2 -> neither
         ]
     )
     result = compute_sla_kpis(df)

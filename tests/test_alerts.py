@@ -71,7 +71,9 @@ def test_generate_alerts_has_expected_fields_and_valid_timestamp() -> None:
 def test_generate_alerts_includes_escalation_when_predicted_high() -> None:
     df = _df([_row()])
     alerts = generate_alerts(df, predictions={"WF-1000": "high"})
-    assert any(alert.type == HIGH_RISK_ESCALATION and alert.severity == "critical" for alert in alerts)
+    assert any(
+        alert.type == HIGH_RISK_ESCALATION and alert.severity == "critical" for alert in alerts
+    )
 
 
 def test_generate_alerts_omits_escalation_without_prediction() -> None:

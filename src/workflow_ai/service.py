@@ -81,7 +81,9 @@ def run_pipeline(
         rule_config: Thresholds passed through to KPIs/alerts/recommendations.
     """
     if train_if_missing and not model_path.exists():
-        logger.info("No trained model found at %s; training one now (train_if_missing=True)", model_path)
+        logger.info(
+            "No trained model found at %s; training one now (train_if_missing=True)", model_path
+        )
         from workflow_ai.train import save_metadata, save_model, train_and_evaluate
 
         training_result = train_and_evaluate(df)
@@ -96,7 +98,9 @@ def run_pipeline(
 
     kpi_summary = build_kpi_summary(df, risk_labels=predicted_risk_series, rule_config=rule_config)
     alerts = generate_alerts(df, predictions=predicted_risk_by_id, rule_config=rule_config)
-    recommendations = generate_recommendations(df, predictions=predicted_risk_by_id, rule_config=rule_config)
+    recommendations = generate_recommendations(
+        df, predictions=predicted_risk_by_id, rule_config=rule_config
+    )
 
     return PipelineResult(
         predictions=predictions,
@@ -157,5 +161,7 @@ def save_outputs(
     logger.info("Wrote KPI summary to %s", kpi_summary_path)
 
     recommendations_path.parent.mkdir(parents=True, exist_ok=True)
-    _dataclasses_to_dataframe(result.recommendations, Recommendation).to_csv(recommendations_path, index=False)
+    _dataclasses_to_dataframe(result.recommendations, Recommendation).to_csv(
+        recommendations_path, index=False
+    )
     logger.info("Wrote %d recommendations to %s", len(result.recommendations), recommendations_path)

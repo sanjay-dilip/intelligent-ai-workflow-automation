@@ -66,7 +66,9 @@ class RuleTrigger:
     recommended_action: str
 
 
-def evaluate_workflow_rules(row: pd.Series, rule_config: RuleConfig = DEFAULT_RULE_CONFIG) -> list[RuleTrigger]:
+def evaluate_workflow_rules(
+    row: pd.Series, rule_config: RuleConfig = DEFAULT_RULE_CONFIG
+) -> list[RuleTrigger]:
     """Evaluate the 6 row-level rules against one engineered workflow row.
 
     Row-level rules only -- high-risk escalation (the 7th rule) depends
@@ -125,7 +127,10 @@ def evaluate_workflow_rules(row: pd.Series, rule_config: RuleConfig = DEFAULT_RU
             )
         )
 
-    if row["manual_step_ratio"] >= rule_config.high_manual_ratio or row["automation_score"] <= rule_config.low_automation_threshold:
+    if (
+        row["manual_step_ratio"] >= rule_config.high_manual_ratio
+        or row["automation_score"] <= rule_config.low_automation_threshold
+    ):
         triggers.append(
             RuleTrigger(
                 rule_type=MANUAL_AUTOMATION_OPPORTUNITY,
@@ -166,7 +171,9 @@ def evaluate_risk_escalation(predicted_risk: str | None) -> RuleTrigger | None:
     )
 
 
-def risk_factors_from_rules(row: pd.Series, rule_config: RuleConfig = DEFAULT_RULE_CONFIG) -> list[str]:
+def risk_factors_from_rules(
+    row: pd.Series, rule_config: RuleConfig = DEFAULT_RULE_CONFIG
+) -> list[str]:
     """Adapter matching predict.py's RiskFactorFn signature.
 
     Repoint predict_workflows's risk_factor_fn default to this function

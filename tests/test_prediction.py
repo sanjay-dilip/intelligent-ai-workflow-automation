@@ -71,7 +71,12 @@ def test_predict_workflows_returns_one_dict_per_row() -> None:
 
     assert len(results) == len(df)
     for entry in results:
-        assert set(entry.keys()) == {"workflow_id", "predicted_risk", "risk_probability", "risk_factors"}
+        assert set(entry.keys()) == {
+            "workflow_id",
+            "predicted_risk",
+            "risk_probability",
+            "risk_factors",
+        }
 
 
 def test_predict_workflows_predicted_risk_is_valid_label() -> None:
@@ -93,7 +98,9 @@ def test_predict_workflows_defaults_to_rules_engine_risk_factors() -> None:
     df = _df({"elapsed_hours": 95.0})
 
     default_result = predict_workflows(df, pipeline=pipeline)[0]
-    explicit_result = predict_workflows(df, pipeline=pipeline, risk_factor_fn=risk_factors_from_rules)[0]
+    explicit_result = predict_workflows(
+        df, pipeline=pipeline, risk_factor_fn=risk_factors_from_rules
+    )[0]
 
     assert default_result["risk_factors"] == explicit_result["risk_factors"]
     assert any("SLA" in factor for factor in default_result["risk_factors"])

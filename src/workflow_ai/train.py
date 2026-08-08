@@ -19,7 +19,13 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
-from workflow_ai.config import MODEL_METADATA_PATH, MODEL_PATH, RANDOM_SEED, RISK_LABELS, TARGET_COLUMN
+from workflow_ai.config import (
+    MODEL_METADATA_PATH,
+    MODEL_PATH,
+    RANDOM_SEED,
+    RISK_LABELS,
+    TARGET_COLUMN,
+)
 from workflow_ai.evaluate import EvaluationResult, evaluate_pipeline, format_evaluation_summary
 from workflow_ai.feature_engineering import FEATURE_COLUMNS, prepare_feature_frame
 from workflow_ai.models import BASELINE_BUILDERS, PRIMARY_MODEL_NAME, build_random_forest_pipeline
@@ -68,7 +74,9 @@ def train_and_evaluate(
     same shared path predict.py uses -- so training and inference never
     derive features differently.
     """
-    train_df, test_df = split_features_and_target(df, test_size=test_size, random_state=random_state)
+    train_df, test_df = split_features_and_target(
+        df, test_size=test_size, random_state=random_state
+    )
 
     X_train = prepare_feature_frame(train_df)
     y_train = train_df[TARGET_COLUMN]
@@ -122,7 +130,9 @@ def build_metadata(
         "n_test_rows": n_test,
         "risk_labels": list(RISK_LABELS),
         "test_metrics": primary_metrics.to_dict(),
-        "baseline_comparison": {name: metrics.to_dict() for name, metrics in baseline_metrics.items()},
+        "baseline_comparison": {
+            name: metrics.to_dict() for name, metrics in baseline_metrics.items()
+        },
         "data_note": (
             "Trained on synthetic data (scripts/generate_demo_data.py); "
             "metrics are not representative of real-world performance."

@@ -33,7 +33,12 @@ logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="Workflow Risk Dashboard", layout="wide")
 
-_OUTPUT_PATHS = (PREDICTIONS_OUTPUT_PATH, ALERTS_OUTPUT_PATH, KPI_SUMMARY_OUTPUT_PATH, RECOMMENDATIONS_OUTPUT_PATH)
+_OUTPUT_PATHS = (
+    PREDICTIONS_OUTPUT_PATH,
+    ALERTS_OUTPUT_PATH,
+    KPI_SUMMARY_OUTPUT_PATH,
+    RECOMMENDATIONS_OUTPUT_PATH,
+)
 
 
 def _outputs_freshness_signature() -> float:
@@ -100,7 +105,9 @@ def _render_sidebar_rerun_controls() -> None:
                 df = load_and_validate_workflow_data(raw_path)
                 result = run_pipeline(df, train_if_missing=train_if_missing, model_path=MODEL_PATH)
                 save_outputs(result)
-            st.sidebar.success(f"Pipeline complete: {len(result.predictions)} predictions, {len(result.alerts)} alerts.")
+            st.sidebar.success(
+                f"Pipeline complete: {len(result.predictions)} predictions, {len(result.alerts)} alerts."
+            )
             st.rerun()
         except FileNotFoundError as error:
             st.sidebar.error(f"No trained model available: {error}")
@@ -112,14 +119,22 @@ def _apply_filters(predictions_df: pd.DataFrame, workflows_df: pd.DataFrame | No
     merged = predictions_df
     if workflows_df is not None:
         merged = predictions_df.merge(
-            workflows_df[["workflow_id", "department", "status", "priority"]], on="workflow_id", how="left"
+            workflows_df[["workflow_id", "department", "status", "priority"]],
+            on="workflow_id",
+            how="left",
         )
 
     st.sidebar.header("Filters")
-    risk_filter = st.sidebar.multiselect("Risk level", options=list(RISK_LABELS), default=list(RISK_LABELS))
+    risk_filter = st.sidebar.multiselect(
+        "Risk level", options=list(RISK_LABELS), default=list(RISK_LABELS)
+    )
     filtered = merged[merged["predicted_risk"].isin(risk_filter)]
 
-    for column, label in (("department", "Department"), ("status", "Status"), ("priority", "Priority")):
+    for column, label in (
+        ("department", "Department"),
+        ("status", "Status"),
+        ("priority", "Priority"),
+    ):
         if column not in merged.columns:
             continue
         options = sorted(merged[column].dropna().unique())
@@ -130,7 +145,9 @@ def _apply_filters(predictions_df: pd.DataFrame, workflows_df: pd.DataFrame | No
 
 
 def _render_executive_overview(kpi_summary: dict, filtered_predictions: pd.DataFrame) -> None:
-    st.caption("Rule-based KPIs (deterministic) alongside ML-derived risk counts, for the current filter selection.")
+    st.caption(
+        "Rule-based KPIs (deterministic) alongside ML-derived risk counts, for the current filter selection."
+    )
 
     volume = kpi_summary["volume"]
     sla = kpi_summary["sla"]
@@ -142,12 +159,16 @@ def _render_executive_overview(kpi_summary: dict, filtered_predictions: pd.DataF
     col4.metric("High-risk workflows (filtered)", high_risk_count)
 
     st.subheader("ML-derived: predicted risk distribution (filtered)")
-    risk_counts = filtered_predictions["predicted_risk"].value_counts().reindex(RISK_LABELS, fill_value=0)
+    risk_counts = (
+        filtered_predictions["predicted_risk"].value_counts().reindex(RISK_LABELS, fill_value=0)
+    )
     st.bar_chart(risk_counts)
 
 
 def _render_risk_monitor(filtered_predictions: pd.DataFrame) -> None:
-    st.caption("ML-derived: Random Forest predicted risk per workflow, with deterministic rule-based risk factors.")
+    st.caption(
+        "ML-derived: Random Forest predicted risk per workflow, with deterministic rule-based risk factors."
+    )
     display_columns = [
         column
         for column in (
@@ -163,7 +184,11 @@ def _render_risk_monitor(filtered_predictions: pd.DataFrame) -> None:
         )
         if column in filtered_predictions.columns
     ]
-    sort_column = "risk_probability_high" if "risk_probability_high" in filtered_predictions.columns else "workflow_id"
+    sort_column = (
+        "risk_probability_high"
+        if "risk_probability_high" in filtered_predictions.columns
+        else "workflow_id"
+    )
     st.dataframe(
         filtered_predictions[display_columns].sort_values(sort_column, ascending=False),
         use_container_width=True,
@@ -172,7 +197,9 @@ def _render_risk_monitor(filtered_predictions: pd.DataFrame) -> None:
 
 
 def _render_kpi_analysis(kpi_summary: dict) -> None:
-    st.caption("Rule-based, deterministic KPIs computed independently of the ML model. Not filtered by sidebar selections.")
+    st.caption(
+        "Rule-based, deterministic KPIs computed independently of the ML model. Not filtered by sidebar selections."
+    )
 
     st.subheader("Volume")
     volume = kpi_summary["volume"]
@@ -186,8 +213,14 @@ def _render_kpi_analysis(kpi_summary: dict) -> None:
     sla = kpi_summary["sla"]
     sla_col1, sla_col2, sla_col3 = st.columns(3)
     sla_col1.metric("Avg SLA utilization", f"{sla['avg_sla_utilization']:.1%}")
-    sla_col2.metric("Breach rate", f"{sla['sla_breach_rate']:.1%}", f"{sla['sla_breach_count']} workflows")
-    sla_col3.metric("Approaching-SLA rate", f"{sla['sla_approaching_rate']:.1%}", f"{sla['sla_approaching_count']} workflows")
+    sla_col2.metric(
+        "Breach rate", f"{sla['sla_breach_rate']:.1%}", f"{sla['sla_breach_count']} workflows"
+    )
+    sla_col3.metric(
+        "Approaching-SLA rate",
+        f"{sla['sla_approaching_rate']:.1%}",
+        f"{sla['sla_approaching_count']} workflows",
+    )
 
     st.subheader("Efficiency")
     efficiency = kpi_summary["efficiency"]
@@ -197,11 +230,15 @@ def _render_kpi_analysis(kpi_summary: dict) -> None:
     eff_col3.metric("Avg completion rate", f"{efficiency['avg_completion_rate']:.1%}")
 
     st.subheader("By department")
-    st.dataframe(pd.DataFrame(kpi_summary["by_department"]), use_container_width=True, hide_index=True)
+    st.dataframe(
+        pd.DataFrame(kpi_summary["by_department"]), use_container_width=True, hide_index=True
+    )
 
 
 def _render_alerts(filtered_alerts: pd.DataFrame) -> None:
-    st.caption("Rule-based: deterministic alerts generated by the rules engine's thresholds. No ML output here.")
+    st.caption(
+        "Rule-based: deterministic alerts generated by the rules engine's thresholds. No ML output here."
+    )
     if filtered_alerts.empty:
         st.info("No alerts for the current filter selection.")
         return
@@ -216,7 +253,9 @@ def _render_alerts(filtered_alerts: pd.DataFrame) -> None:
 
 
 def _render_recommendations(filtered_recommendations: pd.DataFrame) -> None:
-    st.caption("Rule-based: recommendations tied to an observed rules-engine signal. No ML output here.")
+    st.caption(
+        "Rule-based: recommendations tied to an observed rules-engine signal. No ML output here."
+    )
     if filtered_recommendations.empty:
         st.info("No recommendations for the current filter selection.")
         return
@@ -295,7 +334,9 @@ def main() -> None:
     filtered_predictions = _apply_filters(data["predictions"], data["workflows"])
     filtered_workflow_ids = set(filtered_predictions["workflow_id"])
     filtered_alerts = data["alerts"][data["alerts"]["workflow_id"].isin(filtered_workflow_ids)]
-    filtered_recommendations = data["recommendations"][data["recommendations"]["workflow_id"].isin(filtered_workflow_ids)]
+    filtered_recommendations = data["recommendations"][
+        data["recommendations"]["workflow_id"].isin(filtered_workflow_ids)
+    ]
 
     tabs = st.tabs(
         [

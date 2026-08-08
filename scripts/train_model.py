@@ -21,9 +21,17 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Train the workflow risk classification model.")
     parser.add_argument(
-        "--data-path", type=str, default=str(DATA_RAW_DIR / "workflows.csv"), help="Path to the workflow CSV file."
+        "--data-path",
+        type=str,
+        default=str(DATA_RAW_DIR / "workflows.csv"),
+        help="Path to the workflow CSV file.",
     )
-    parser.add_argument("--test-size", type=float, default=DEFAULT_TEST_SIZE, help="Fraction of rows held out for testing.")
+    parser.add_argument(
+        "--test-size",
+        type=float,
+        default=DEFAULT_TEST_SIZE,
+        help="Fraction of rows held out for testing.",
+    )
     parser.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed.")
     args = parser.parse_args()
 
@@ -41,7 +49,9 @@ def main() -> None:
     save_model(result.pipeline)
     save_metadata(result.metadata)
 
-    logger.info("Primary model (random_forest): %s", format_evaluation_summary(result.primary_metrics))
+    logger.info(
+        "Primary model (random_forest): %s", format_evaluation_summary(result.primary_metrics)
+    )
     for name, metrics in result.baseline_metrics.items():
         logger.info("Baseline (%s): %s", name, format_evaluation_summary(metrics))
 
