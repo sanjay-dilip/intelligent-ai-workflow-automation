@@ -5,10 +5,10 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from workflow_ai.config import DEFAULT_RULE_CONFIG, RISK_LABELS
-from workflow_ai.feature_engineering import engineer_features
+from workflow_ai.config import RISK_LABELS
 from workflow_ai.models import build_random_forest_pipeline
-from workflow_ai.predict import _NO_RISK_FACTORS_MESSAGE, _default_risk_factors, load_model, predict_workflows
+from workflow_ai.predict import load_model, predict_workflows
+from workflow_ai.rules_engine import risk_factors_from_rules
 
 BASE_ROW = {
     "workflow_id": "WF-1000",
@@ -88,36 +88,15 @@ def test_predict_workflows_probabilities_sum_to_one_and_cover_all_classes() -> N
     assert sum(probability.values()) == pytest.approx(1.0)
 
 
-def _engineered_row(overrides: dict | None = None) -> pd.Series:
-    return engineer_features(_df(overrides)).iloc[0]
+def test_predict_workflows_defaults_to_rules_engine_risk_factors() -> None:
+    pipeline = _fitted_pipeline()
+    df = _df({"elapsed_hours": 95.0})
 
+    default_result = predict_workflows(df, pipeline=pipeline)[0]
+    explicit_result = predict_workflows(df, pipeline=pipeline, risk_factor_fn=risk_factors_from_rules)[0]
 
-def test_default_risk_factors_flags_high_sla_utilization() -> None:
-    row = _engineered_row({"elapsed_hours": 95.0})
-    factors = _default_risk_factors(row, DEFAULT_RULE_CONFIG)
-    assert any("SLA utilization" in factor for factor in factors)
-    assert not any("Error count" in factor for factor in factors)
-
-
-def test_default_risk_factors_returns_placeholder_when_nothing_triggers() -> None:
-    row = _engineered_row()
-    factors = _default_risk_factors(row, DEFAULT_RULE_CONFIG)
-    assert factors == [_NO_RISK_FACTORS_MESSAGE]
-
-
-@pytest.mark.parametrize(
-    "overrides",
-    [
-        {},
-        {"elapsed_hours": 95.0},
-        {"error_count": 10},
-        {"pending_items": 200},
-    ],
-)
-def test_default_risk_factors_is_never_empty(overrides: dict) -> None:
-    row = _engineered_row(overrides)
-    factors = _default_risk_factors(row, DEFAULT_RULE_CONFIG)
-    assert len(factors) >= 1
+    assert default_result["risk_factors"] == explicit_result["risk_factors"]
+    assert any("SLA" in factor for factor in default_result["risk_factors"])
 
 
 def test_predict_workflows_ignores_leakage_columns_in_model_input() -> None:

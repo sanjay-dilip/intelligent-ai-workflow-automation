@@ -6,10 +6,10 @@ Random Forest's internal feature importances -- individual predictions
 are never explained by aggregate feature importance, since that is a
 property of the whole trained model, not of any one row.
 
-The default risk-factor logic below is intentionally small and
-standalone. It is injectable via the risk_factor_fn parameter so a
-future, richer rules engine (see the project plan's Build 5) can
-supersede it without changing predict_workflows itself.
+risk_factor_fn defaults to rules_engine.risk_factors_from_rules, the
+project's single source of truth for rule thresholds. It remains
+injectable so callers/tests can override it without changing
+predict_workflows itself.
 """
 
 from __future__ import annotations
@@ -23,10 +23,9 @@ from sklearn.pipeline import Pipeline
 
 from workflow_ai.config import DEFAULT_RULE_CONFIG, MODEL_PATH, RuleConfig, WORKFLOW_ID_COLUMN
 from workflow_ai.feature_engineering import engineer_features, prepare_feature_frame
+from workflow_ai.rules_engine import risk_factors_from_rules
 
 RiskFactorFn = Callable[[pd.Series, RuleConfig], list[str]]
-
-_NO_RISK_FACTORS_MESSAGE: str = "No individual risk thresholds exceeded"
 
 
 def load_model(path: Path = MODEL_PATH) -> Pipeline:
@@ -40,45 +39,10 @@ def load_model(path: Path = MODEL_PATH) -> Pipeline:
     return joblib.load(path)
 
 
-def _default_risk_factors(row: pd.Series, rule_config: RuleConfig = DEFAULT_RULE_CONFIG) -> list[str]:
-    """Deterministic, threshold-based explanation for one engineered workflow row."""
-    factors: list[str] = []
-
-    if row["sla_utilization"] >= rule_config.sla_warning_threshold:
-        factors.append(
-            f"SLA utilization {row['sla_utilization']:.0%} at or above the "
-            f"{rule_config.sla_warning_threshold:.0%} warning threshold"
-        )
-    if row["error_count"] >= rule_config.high_error_threshold:
-        factors.append(f"Error count {int(row['error_count'])} at or above threshold {rule_config.high_error_threshold}")
-    if row["rework_rate"] >= rule_config.high_rework_rate:
-        factors.append(
-            f"Rework rate {row['rework_rate']:.0%} at or above the {rule_config.high_rework_rate:.0%} threshold"
-        )
-    if row["manual_step_ratio"] >= rule_config.high_manual_ratio:
-        factors.append(
-            f"Manual step ratio {row['manual_step_ratio']:.0%} at or above the "
-            f"{rule_config.high_manual_ratio:.0%} threshold"
-        )
-    if row["automation_score"] <= rule_config.low_automation_threshold:
-        factors.append(
-            f"Automation score {row['automation_score']:.0%} at or below the "
-            f"{rule_config.low_automation_threshold:.0%} threshold"
-        )
-    if row["pending_items"] >= rule_config.backlog_threshold:
-        factors.append(
-            f"Pending items {int(row['pending_items'])} at or above backlog threshold {rule_config.backlog_threshold}"
-        )
-
-    if not factors:
-        factors.append(_NO_RISK_FACTORS_MESSAGE)
-    return factors
-
-
 def predict_workflows(
     df: pd.DataFrame,
     pipeline: Pipeline | None = None,
-    risk_factor_fn: RiskFactorFn = _default_risk_factors,
+    risk_factor_fn: RiskFactorFn = risk_factors_from_rules,
     rule_config: RuleConfig = DEFAULT_RULE_CONFIG,
 ) -> list[dict]:
     """Predict risk for each workflow row and attach a deterministic explanation.
